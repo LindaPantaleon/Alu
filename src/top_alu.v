@@ -6,18 +6,18 @@
 `default_nettype none
 
 module tt_um_top_alu (
-    input  wire [7:0] io_in,
-    output wire [7:0] io_out,
+    input  wire [7:0] ui_in,
+    output wire [7:0] uo_out,
     input  wire clk,
     input  wire rst_n,
-    inout  wire [7:0] io_oeb,
+    inout  wire [7:0] uo_oeb,
     input  wire ena 
 );
     // Separar entradas
-    wire [1:0] A       = io_in[1:0];
-    wire [1:0] B       = io_in[3:2];
-    wire [2:0] control = io_in[6:4];
-    wire [0:0] s_amt   = io_in[7]; // un bit para shift amount
+    wire [1:0] A       = ui_in[1:0];
+    wire [1:0] B       = ui_in[3:2];
+    wire [2:0] control = ui_in[6:4];
+    wire [0:0] s_amt   = ui_in[7]; // un bit para shift amount
 
     // Expandimos a 8 bits para la ALU
     wire [7:0] A_ext = {6'b0, A};
