@@ -6,15 +6,20 @@
 `default_nettype none
 
 module tt_um_top_alu (
-    input  wire [7:0] ui_in,
+   input  wire [7:0] ui_in,
     output wire [7:0] uo_out,
-    input  wire [7:0] uio_in,
+    input  wire [7:0] uio_in,      // si no se usan, poner:
     output wire [7:0] uio_out,
     output wire [7:0] uio_oe,
     input  wire       clk,
     input  wire       rst_n,
     input  wire       ena 
 );
+
+    // Asignar valores por defecto para señales no usadas para evitar warnings
+    assign uio_out = 8'b0;
+    assign uio_oe  = 8'b0;
+
     // Separar entradas
     wire [1:0] A       = ui_in[1:0];
     wire [1:0] B       = ui_in[3:2];
@@ -123,7 +128,7 @@ module Prefix_adder(
     // Generate y Propagate
     wire [7:0] G, P;
     wire [7:0] X;
-    wire [8:0] C;
+    reg  [8:0] C;  // Ahora reg para poder asignar en always_comb
 
     assign X = A ^ B;
     assign G = A & B;
@@ -135,23 +140,23 @@ module Prefix_adder(
     wire [7:0] G3, P3;
 
     // Nivel 1
-    assign G1[0] = G[0];             assign P1[0] = P[0];
-    assign G1[1] = G[1];             assign P1[1] = P[1];
-    assign G1[2] = G[2] | (P[2] & G[1]);  assign P1[2] = P[2] & P[1];
-    assign G1[3] = G[3];             assign P1[3] = P[3];
-    assign G1[4] = G[4] | (P[4] & G[3]);  assign P1[4] = P[4] & P[3];
-    assign G1[5] = G[5];             assign P1[5] = P[5];
-    assign G1[6] = G[6] | (P[6] & G[5]);  assign P1[6] = P[6] & P[5];
-    assign G1[7] = G[7];             assign P1[7] = P[7];
+    assign G1[0] = G[0];                 assign P1[0] = P[0];
+    assign G1[1] = G[1];                 assign P1[1] = P[1];
+    assign G1[2] = G[2] | (P[2] & G[1]); assign P1[2] = P[2] & P[1];
+    assign G1[3] = G[3];                 assign P1[3] = P[3];
+    assign G1[4] = G[4] | (P[4] & G[3]); assign P1[4] = P[4] & P[3];
+    assign G1[5] = G[5];                 assign P1[5] = P[5];
+    assign G1[6] = G[6] | (P[6] & G[5]); assign P1[6] = P[6] & P[5];
+    assign G1[7] = G[7];                 assign P1[7] = P[7];
 
     // Nivel 2
-    assign G2[0] = G1[0];                 assign P2[0] = P1[0];
-    assign G2[1] = G1[1];                 assign P2[1] = P1[1];
-    assign G2[2] = G1[2];                 assign P2[2] = P1[2];
+    assign G2[0] = G1[0];                   assign P2[0] = P1[0];
+    assign G2[1] = G1[1];                   assign P2[1] = P1[1];
+    assign G2[2] = G1[2];                   assign P2[2] = P1[2];
     assign G2[3] = G1[3] | (P1[3] & G1[2]); assign P2[3] = P1[3] & P1[2];
-    assign G2[4] = G1[4];                 assign P2[4] = P1[4];
+    assign G2[4] = G1[4];                   assign P2[4] = P1[4];
     assign G2[5] = G1[5] | (P1[5] & G1[4]); assign P2[5] = P1[5] & P1[4];
-    assign G2[6] = G1[6];                 assign P2[6] = P1[6];
+    assign G2[6] = G1[6];                   assign P2[6] = P1[6];
     assign G2[7] = G1[7] | (P1[7] & G1[6]); assign P2[7] = P1[7] & P1[6];
 
     // Nivel 3
@@ -164,22 +169,25 @@ module Prefix_adder(
     assign G3[6] = G2[6]; assign P3[6] = P2[6];
     assign G3[7] = G2[7]; assign P3[7] = P2[7];
 
-    // Cálculo de carry
-    assign C[0] = Cin;
-    assign C[1] = G[0] | (P[0] & C[0]);
-    assign C[2] = G1[1] | (P1[1] & C[1]);
-    assign C[3] = G1[2] | (P1[2] & C[2]);
-    assign C[4] = G2[3] | (P2[3] & C[3]);
-    assign C[5] = G2[4] | (P2[4] & C[4]);
-    assign C[6] = G2[5] | (P2[5] & C[5]);
-    assign C[7] = G2[6] | (P2[6] & C[6]);
-    assign C[8] = G2[7] | (P2[7] & C[7]);
+    // Cálculo de carry con always_comb para evitar combinational loop
+    always @(*) begin
+        C[0] = Cin;
+        C[1] = G[0] | (P[0] & C[0]);
+        C[2] = G1[1] | (P1[1] & C[1]);
+        C[3] = G1[2] | (P1[2] & C[2]);
+        C[4] = G2[3] | (P2[3] & C[3]);
+        C[5] = G2[4] | (P2[4] & C[4]);
+        C[6] = G2[5] | (P2[5] & C[5]);
+        C[7] = G2[6] | (P2[6] & C[6]);
+        C[8] = G2[7] | (P2[7] & C[7]);
+    end
 
     // Suma
     assign S = X ^ C[7:0];
     assign Cout = C[8];
 
 endmodule
+
 module shift_left(
     input  [7:0] A,
     input  [3:0] s_amt,
