@@ -8,10 +8,12 @@
 module tt_um_top_alu (
     input  wire [7:0] ui_in,
     output wire [7:0] uo_out,
-    input  wire clk,
-    input  wire rst_n,
-    inout  wire [7:0] uo_oeb,
-    input  wire ena 
+    input  wire [7:0] uio_in,
+    output wire [7:0] uio_out,
+    output wire [7:0] uio_oe,
+    input  wire       clk,
+    input  wire       rst_n,
+    input  wire       ena 
 );
     // Separar entradas
     wire [1:0] A       = ui_in[1:0];
