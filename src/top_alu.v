@@ -5,9 +5,12 @@
 
 `default_nettype none
 
-module tt_um_top_alu(
-    input  [7:0] io_in,
-    output [7:0] io_out
+module tt_um_top_alu (
+    input  wire [7:0] io_in,
+    output wire [7:0] io_out,
+    input  wire clk,
+    input  wire rst_n,
+    inout  wire [7:0] io_oeb
 );
     // Separar entradas
     wire [1:0] A       = io_in[1:0];
