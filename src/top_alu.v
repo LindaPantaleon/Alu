@@ -41,11 +41,11 @@ module tt_um_top_alu (
         .OVERFLOW(OVERFLOW)
     );
 
-    assign io_out[3:0] = RESULT[3:0]; // solo 4 bits del resultado
-    assign io_out[4]   = CARRY;
-    assign io_out[5]   = ZERO;
-    assign io_out[6]   = NEGATIVE;
-    assign io_out[7]   = OVERFLOW;
+    assign uo_out[3:0] = RESULT[3:0]; // solo 4 bits del resultado
+    assign uo_out[4]   = CARRY;
+    assign uo_out[5]   = ZERO;
+    assign uo_out[6]   = NEGATIVE;
+    assign uo_out[7]   = OVERFLOW;
 endmodule
 
 module ALU(
