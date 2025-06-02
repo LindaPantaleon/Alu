@@ -6,31 +6,28 @@
 `default_nettype none
 
 module tt_um_top_alu(
-    input  [15:0] sw,
-    input  btnU,
-    input  btnR,
-    input  btnL,
-    output [15:0] led
+    input  [7:0] io_in,
+    output [7:0] io_out
 );
+    // Separar entradas
+    wire [1:0] A       = io_in[1:0];
+    wire [1:0] B       = io_in[3:2];
+    wire [2:0] control = io_in[6:4];
+    wire [0:0] s_amt   = io_in[7]; // un bit para shift amount
 
-    wire [7:0] A, B, RESULT;
-    wire [3:0] s_amt;
-    wire [2:0] ALU_control;
+    // Expandimos a 8 bits para la ALU
+    wire [7:0] A_ext = {6'b0, A};
+    wire [7:0] B_ext = {6'b0, B};
+    wire [3:0] s_amt_ext = {3'b0, s_amt};
+
+    wire [7:0] RESULT;
     wire ZERO, NEGATIVE, CARRY, OVERFLOW;
 
-    assign A = sw[7:0];
-    assign B = sw[15:8];
-    assign s_amt = sw[3:0];
-
-    assign ALU_control[0] = btnU;
-    assign ALU_control[1] = btnR;
-    assign ALU_control[2] = btnL;
-
-    ALU alu_inst (
-        .A(A),
-        .B(B),
-        .s_amt(s_amt),
-        .ALU_control(ALU_control),
+    ALU alu (
+        .A(A_ext),
+        .B(B_ext),
+        .s_amt(s_amt_ext),
+        .ALU_control(control),
         .RESULT(RESULT),
         .ZERO(ZERO),
         .NEGATIVE(NEGATIVE),
@@ -38,14 +35,13 @@ module tt_um_top_alu(
         .OVERFLOW(OVERFLOW)
     );
 
-    assign led[7:0]   = RESULT;
-    assign led[8]     = ZERO;
-    assign led[9]     = NEGATIVE;
-    assign led[10]    = CARRY;
-    assign led[11]    = OVERFLOW;
-    assign led[15:12] = 4'b0000;
-
+    assign io_out[3:0] = RESULT[3:0]; // solo 4 bits del resultado
+    assign io_out[4]   = CARRY;
+    assign io_out[5]   = ZERO;
+    assign io_out[6]   = NEGATIVE;
+    assign io_out[7]   = OVERFLOW;
 endmodule
+
 module ALU(
     input  [7:0] A,
     input  [7:0] B,
