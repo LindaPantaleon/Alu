@@ -16,7 +16,10 @@ The outputs can be observed on the uo_out[1:0] pins. The FSM transitions and out
 
 ## How to test
 
-Explain how to use your project
+1. Proporciona los operandos A y B de 8 bits por medio de las entradas `ui[0]` a `ui[7]` y `uio[0]` a `uio[7]`.
+2. Selecciona la operación usando bits de control (por ejemplo, `uio[6:7]`).
+3. El resultado se mostrará en `uo[0]` a `uo[7]`.
+4. Cambia las entradas y verifica que las salidas corresponden a la operación esperada.
 
 ## External hardware
 
